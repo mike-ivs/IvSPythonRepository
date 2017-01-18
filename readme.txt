@@ -1,3 +1,5 @@
+This is a test!
+
 * Clone the git repository to create a local copy in an "ivs" folder. 
   
     $ cd python/
