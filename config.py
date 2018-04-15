@@ -44,7 +44,7 @@ def get_datafile(relative_path,basename):
     else:
         str_data_dirs = ", ".join([idir for idir in data_dirs if idir is not None])
         relative_file = os.path.join(relative_path,basename)
-        raise IOError, "File %s not found in any of the specified data directories %s"%(relative_file,str_data_dirs)
+        raise IOError("File %s not found in any of the specified data directories %s"%(relative_file,str_data_dirs))
 
     return filename
 
@@ -77,6 +77,7 @@ if __name__=="__main__":
     from ivs.aux import loggers
     import shutil
     import time
+    import glob
     logger = loggers.get_basic_logger()
 
     to_install = ['spectra/pyrotin4',
@@ -100,15 +101,20 @@ if __name__=="__main__":
                     #   the user
                     cmd = 'f2py --fcompiler=%s -c %s.f -m %s'%(compiler,os.path.join(direc,pname),pname)
                     logger.info('Compiling %s: %s'%(pname.upper(),cmd))
-                    if answer!='Y':
-                        answer = raw_input('Continue? [Y/n] ')
+                    if answer.lower()!='y':
+                        answer = input('Continue? [Y/n] ')
                         if answer.lower()=='n':
                             continue
                     #-- call the compiling command
                     p = subprocess.check_output(cmd,shell=True)#,stdout=devnull)
                     #-- check if compilation went fine
-                    if os.path.isfile(pname+'.so'):
-                        shutil.move(pname+'.so',name+'.so')
+                    # find compiled file name
+                    compiled_filename = list(filter(os.path.isfile, glob.glob('./'+pname+'*.so')))
+                    # if it exists move it to to appropriate dir
+                    # and change the compiled name e.g. deeming.cpython-36m-x86_64-linux-gnu.so
+                    # to e.g. deeming.so
+                    if compiled_filename:
+                        shutil.move(compiled_filename[0],name+'.so')
                         logger.info('... succeeded')
                     else:
                         logger.error('FAILED')
