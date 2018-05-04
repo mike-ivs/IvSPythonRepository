@@ -96,9 +96,7 @@ class Database(dict):
     0
     '''
 
-
-    def __init__(self,db_path):
-
+    def __init__(self, db_path):
         '''
         Initializing a Database class.
 
@@ -120,10 +118,7 @@ class Database(dict):
         self.__changed = []
         self.__deleted = []
 
-
-
-    def __delitem__(self,key):
-
+    def __delitem__(self, key):
         '''
         Delete a key from the database.
 
@@ -139,13 +134,9 @@ class Database(dict):
         '''
 
         self.__deleted.append(key)
-        return super(Database,self).__delitem__(key)
+        return super(Database, self).__delitem__(key)
 
-
-
-
-    def __setitem__(self,key,value):
-
+    def __setitem__(self, key, value):
         '''
         Set a dict key with value.
 
@@ -165,12 +156,9 @@ class Database(dict):
         '''
 
         self.__changed.append(key)
-        return super(Database,self).__setitem__(key,value)
+        return super(Database, self).__setitem__(key, value)
 
-
-
-    def setdefault(self,key,*args):
-
+    def setdefault(self, key, *args):
         '''
         Return key's value, if present. Otherwise add key with value default
         and return.
@@ -188,12 +176,9 @@ class Database(dict):
 
         if key not in self:
             self.__changed.append(key)
-        return super(Database,self).setdefault(key,*args)
+        return super(Database, self).setdefault(key, *args)
 
-
-
-    def pop(self,key,*args):
-
+    def pop(self, key, *args):
         '''
         If database has key, remove it from the database and return it, else
         return default.
@@ -216,11 +201,9 @@ class Database(dict):
 
         if key in self:
             self.__deleted.append(key)
-        return super(Database,self).pop(key,*args)
-
+        return super(Database, self).pop(key, *args)
 
     def popitem(self):
-
         '''
         Remove and return an arbitrary (key, value) pair from the database.
 
@@ -235,14 +218,11 @@ class Database(dict):
 
         '''
 
-        (key,value) = super(Database,self).popitem()
+        (key, value) = super(Database, self).popitem()
         self.__deleted.append(key)
-        return (key,value)
+        return (key, value)
 
-
-
-    def update(self,*args,**kwargs):
-
+    def update(self, *args, **kwargs):
         '''
 
         Update the database with new entries, as with a dictionary.
@@ -253,19 +233,16 @@ class Database(dict):
 
         @param args: A dictionary type object to update the Database.
         @type args: dict()
-        @keyword kwargs: Any extra keywords are added as keys with their values.
+        @keyword kwargs: Any extra keywords are added as keys with values.
         @type kwargs: any type that is allowed as a dict key type.
 
         '''
 
         self.__changed.extend(list(kwargs.keys()))
         self.__changed.extend(list(args[0].keys()))
-        return super(Database,self).update(*args,**kwargs)
-
-
+        return super(Database, self).update(*args, **kwargs)
 
     def read(self):
-
         '''
         Read the database from the hard disk.
 
@@ -288,26 +265,24 @@ class Database(dict):
         '''
 
         try:
-            dbfile = open(self.db_path,'r')
+            dbfile = open(self.db_path, 'r')
             while True:
                 try:
                     db = pickle.load(dbfile)
                     break
                 except ValueError:
-                    print('Loading database failed: ValueError ~ insecure '+\
-                          'string pickle. Waiting 10 seconds and trying again.')
+                    print('Loading database failed: ValueError ~ insecure ' +
+                          'string pickle. Waiting 10 sec and trying again.')
                     time.sleep(10)
             dbfile.close()
             self.clear()
-            super(Database,self).update(db)
+            super(Database, self).update(db)
         except IOError:
-            print('No database present at %s. Creating a new one.'%self.db_path)
+            print('No database present at %s. Creating a new one.'
+                  % self.db_path)
             self.__save()
 
-
-
     def sync(self):
-
         '''
 
         Update the database on the harddisk and in the memory.
@@ -327,24 +302,21 @@ class Database(dict):
         '''
 
         if self.__changed or self.__deleted:
-            current_db = dict([(k,v)
-                               for k,v in list(self.items())
+            current_db = dict([(k, v)
+                               for k, v in list(self.items())
                                if k in set(self.__changed)])
             self.read()
             self.__deleted = list(set(self.__deleted))
             while self.__deleted:
                 try:
-                    super(Database,self).__delitem__(self.__deleted.pop())
+                    super(Database, self).__delitem__(self.__deleted.pop())
                 except KeyError:
                     pass
-            super(Database,self).update(current_db)
+            super(Database, self).update(current_db)
             self.__save()
             self.__changed = []
 
-
-
     def __save(self):
-
         '''
 
         Save a database.
@@ -356,14 +328,11 @@ class Database(dict):
 
         '''
 
-        dbfile = open(self.db_path,'w')
-        pickle.dump(self,dbfile)
+        dbfile = open(self.db_path, 'w')
+        pickle.dump(self, dbfile)
         dbfile.close()
 
-
-
-    def addChangedKey(self,key):
-
+    def addChangedKey(self, key):
         '''
         Add a key to the list of changed keys in the database.
 
@@ -380,10 +349,7 @@ class Database(dict):
 
         self.__changed.append(key)
 
-
-
     def getDeletedKeys(self):
-
         '''
         Return a list of all keys that have been deleted from the database in
         memory.
@@ -394,10 +360,7 @@ class Database(dict):
 
         return self.__deleted
 
-
-
     def getChangedKeys(self):
-
         '''
         Return a list of all keys that have been changed in the database in
         memory.
@@ -407,6 +370,7 @@ class Database(dict):
         '''
 
         return self.__changed
+
 
 if __name__ == "__main__":
     import doctest
