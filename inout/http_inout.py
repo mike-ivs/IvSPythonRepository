@@ -20,11 +20,11 @@ def download(link, filename=None):
     to close the url after finishing reading!
 
     @parameter link: the url of the file
-    @type link: string
+    @ type link: string
     @parameter filename: the name of the file to write to (optional)
-    @type filename: str
+    @ type filename: str
     @return: output filename(, url object)
-    @rtype: string(, FancyURLopener)
+    @ rtype: string(, FancyURLopener)
     """
     url = urllib.request.FancyURLopener()
     myfile, msg = url.retrieve(link, filename=filename)
