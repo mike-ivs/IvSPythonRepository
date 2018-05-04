@@ -19,7 +19,7 @@ from ivs.sed import filters
 from ivs.aux import loggers
 from ivs.aux import numpy_ext
 from ivs.inout import ascii
-from ivs.inout import http
+from ivs.inout import http_inout
 from ivs.units import conversions
 from ivs.catalogs import vizier
 from ivs.catalogs import sesame
@@ -503,7 +503,7 @@ def get_FUSE_spectra(ID=None,directory=None,cat_info=False,select=['ano']):
                 link = download_link.format(folder=folder,filename=filename)
                 link = link.lower()
                 filename = os.path.join(direc,filename)
-                myfile = http.download(link,filename=filename)
+                myfile = http_inout.download(link,filename=filename)
                 #-- if the file is too small to be a science file, it is
                 #   actually an HTML file stating that the URL does not exist.
                 if os.path.getsize(myfile)<1000:
@@ -571,5 +571,3 @@ if __name__=="__main__":
         except IOError:
             print('failed')
             continue
-
-

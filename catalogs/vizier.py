@@ -97,7 +97,7 @@ from scipy.spatial import KDTree
 #-- IvS repository
 from ivs.inout import ascii
 from ivs.inout import fits
-from ivs.inout import http
+from ivs.inout import http_inout
 from ivs.units import conversions
 from ivs.aux import loggers
 from ivs.aux import numpy_ext
@@ -435,7 +435,7 @@ def get_IUE_spectra(ID=None,directory=None,unzip=True,cat_info=False,select='low
             filename = download_link.split('iue_mark=')[1].split('&')[0]
             filename = os.path.join(direc,filename)
         #-- download file and retrieve the path to the downloaded file
-        mytarfile = http.download(download_link,filename=filename)
+        mytarfile = http_inout.download(download_link,filename=filename)
         if filename is None:
             mytarfile,url = mytarfile
         #-- perhaps unzipping is not necessary
