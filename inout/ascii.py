@@ -212,7 +212,6 @@ def write_array(data, filename, **kwargs):
     """
     header = kwargs.get('header', None)
     comments = kwargs.get('comments', None)
-    commentchar = kwargs.get('commentchar', '#')
     sep = kwargs.get('sep', ' ')
     axis0 = kwargs.get('axis0', 'rows')
     mode = kwargs.get('mode', 'w')
@@ -463,7 +462,6 @@ def read_photrot(infile, teff=None, logg=None):
 
         # second line gives number of blocks
         line = f.readline()
-        nr_b = int(line)
         blocks = []
 
         # -- check for fundamental parameters
@@ -553,13 +551,9 @@ def read_phot(photfile, teff=None, logg=None):
         star_info = dict(teff=10**logTeff, logg=logg)
 
         # second line gives number of blocks
-        nr_b = int(fc[1])
         blocks = []
 
         # loop over all blocks and store them
-        pos = 0
-        fail = False
-        nrfails = 0
         for line in fc[2:]:
             entries = line.strip().split()
             block = {}
