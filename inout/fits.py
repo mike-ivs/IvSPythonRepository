@@ -21,16 +21,16 @@ def read_spectrum(filename, return_header=False):
     Read a standard 1D spectrum from the primary HDU of a FITS file.
 
     @param filename: FITS filename
-    @type filename: str
+    @ type filename: str
     @param return_header: return header information as dictionary
-    @type return_header: bool
+    @ type return_header: bool
     @return: wavelength, flux(, header)
-    @rtype: array, array(, dict)
+    @ rtype: array, array(, dict)
     """
     flux = pf.getdata(filename)
     header = pf.getheader(filename)
 
-    # -- Make the equidistant wavelengthgrid using the Fits standard info
+    # -- Make the equidistant wavelength grid using the Fits standard info
     #   in the header
     ref_pix = int(header["CRPIX1"]) - 1
     dnu = float(header["CDELT1"])
@@ -62,20 +62,22 @@ def read_corot(fits_file,  return_header=False, type_data='hel',
         - type_data='helreg': heliocentric equidistant
 
     @param fits_file: CoRoT FITS file name
-    @type fits_file: string
+    @ type fits_file: string
     @param return_header: return header information as dictionary
-    @type return_header: bool
+    @ type return_header: bool
     @param type_data: type of data to return
-    @type type_data: string (one of 'raw','hel' or 'helreg')
+    @ type type_data: string (one of 'raw','hel' or 'helreg')
     @param remove_flagged: remove flagged datapoints
-    @type remove_flagged: True
+    @ type remove_flagged: True
     @return: CoRoT data (times, flux, error, flags)
-    @rtype: array, array, array, array(, header)
+    @ rtype: array, array, array, array(, header)
     """
     # -- read in the FITS file
     # headers: ['DATE', 'DATEJD', 'DATEHEL', 'STATUS', 'WHITEFLUX',
     #           'WHITEFLUXDEV', 'BG', 'CORREC']
     fits_file_ = pf.open(fits_file)
+    # CoRoT SISMO file
+
     if fits_file_[0].header['hlfccdid'][0] == 'A':
         times, flux, error, flags = fits_file_[type_data].data.field(0),\
             fits_file_[type_data].data.field(1),\
@@ -87,6 +89,7 @@ def read_corot(fits_file,  return_header=False, type_data='hel',
         fits_file_.close()
 
         logger.debug('Read CoRoT SISMO file %s' % (fits_file))
+
     elif fits_file_[0].header['hlfccdid'][0] == 'E':
         times = fits_file_['bintable'].data.field('datehel')
         if 'blueflux' in fits_file_['bintable'].columns.names:
@@ -365,8 +368,7 @@ def write_recarray(recarr, filename, header_dict={}, units={}, ext='new',
     # -- take care of the header:
     if len(header_dict):
         for key in header_dict:
-            if (len(key) > 8) and (not key in list(tbhdu.header.keys())) and
-            (not key[:9] == 'HIERARCH'):
+            if (len(key) > 8) and (not key in list(tbhdu.header.keys())) and (not key[:9] == 'HIERARCH'):
                 key_ = 'HIERARCH ' + key
             else:
                 key_ = key
