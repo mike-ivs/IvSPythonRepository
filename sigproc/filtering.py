@@ -92,6 +92,8 @@ def filter_signal(x,y,ftype,f0=None,fn=None,step=1,x_template=None,**kwargs):
         x_template = x + 0.
     if f0 is None: f0 = 0
     if fn is None: fn = len(x_template)
+    #-- make sure indexes are integers
+    f0,fn,step = int(f0),int(fn),int(step)
     #-- set window and kernel function
     ftype = ftype.lower()
     window = globals()[ftype+'_window']
@@ -103,6 +105,7 @@ def filter_signal(x,y,ftype,f0=None,fn=None,step=1,x_template=None,**kwargs):
 
     #-- perhaps the window is a number, perhaps an array. Make sure it is an
     #   array
+    print(f0,fn,step)
     if not isinstance(lower_window,np.ndarray):
         lower_window = lower_window*np.ones(len(x_template))[f0:fn:step]
     if not isinstance(higher_window,np.ndarray):
