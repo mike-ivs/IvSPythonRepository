@@ -440,7 +440,7 @@ class SED(object):
     """
 
     def __init__(self, ID=None, photfile=None, plx=None, load_fits=True,
-                 load_hdf5=True, label=''):
+                 load_hdf5=True, label='', no_query=False):
         """
         Initialize SED class.
 
@@ -475,7 +475,7 @@ class SED(object):
         else:
             self.photfile = photfile
 
-        # -- load information from the photometry file if it exists
+        # -- Load information from the photometry file if it exists.
         if not os.path.isfile(self.photfile):
             try:
                 self.info = sesame.search(os.path.basename(ID),fix=True)
@@ -509,7 +509,7 @@ class SED(object):
             if self.ID is None:
                 self.ID = os.path.splitext(os.path.basename(self.photfile))[0]#self.info['oname']
                 logger.info('Name from file used to set ID of object')
-        # --load information from the FITS file if it exists
+        # -- Load information from the FITS and HDF5 files.
         self.results = {}
         self.constraints = {}
         if load_fits:
