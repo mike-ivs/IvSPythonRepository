@@ -476,7 +476,15 @@ class SED(object):
             self.photfile = photfile
 
         # -- Load information from the photometry file if it exists.
-        if not os.path.isfile(self.photfile):
+        if os.path.isfile(self.photfile):
+            self.load_photometry()
+            logger.info('Photometry loaded from file')
+            # -- if no ID was given, set the official name as the ID.
+            if self.ID is None:
+                self.ID = os.path.splitext(os.path.basename(self.photfile))[0]#self.info['oname']
+                logger.info('Name from file used to set ID of object')
+        # -- Photometry file does not exist.
+        else:
             try:
                 self.info = sesame.search(os.path.basename(ID),fix=True)
             except KeyError:
@@ -502,13 +510,6 @@ class SED(object):
                     self.info['plx'] = {}
                 self.info['plx']['v'] = plx[0]
                 self.info['plx']['e'] = plx[1]
-        else:
-            self.load_photometry()
-            logger.info('Photometry loaded from file')
-            # -- if no ID was given, set the official name as the ID.
-            if self.ID is None:
-                self.ID = os.path.splitext(os.path.basename(self.photfile))[0]#self.info['oname']
-                logger.info('Name from file used to set ID of object')
         # -- Load information from the FITS and HDF5 files.
         self.results = {}
         self.constraints = {}
