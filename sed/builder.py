@@ -440,7 +440,7 @@ class SED(object):
     """
 
     def __init__(self, ID=None, photfile=None, plx=None, load_fits=True,
-                 load_hdf5=True, label=''):
+                 load_hdf5=True, label='', query=True):
         """
         Initialize SED class.
 
@@ -475,8 +475,19 @@ class SED(object):
         else:
             self.photfile = photfile
 
-        # -- load information from the photometry file if it exists
-        if not os.path.isfile(self.photfile):
+        # -- Load information from the photometry file if it exists.
+        if os.path.isfile(self.photfile):
+            self.load_photometry()
+            logger.info('Photometry loaded from file')
+            # -- if no ID was given, set the official name as the ID.
+            if self.ID is None:
+                self.ID = os.path.splitext(os.path.basename(self.photfile))[0]#self.info['oname']
+                logger.info('Name from file used to set ID of object')
+        # -- The photometry file does not exist. Check if the object
+        #   name should be queried. This action seems to make little
+        #   sense, but perhaps it exists for the convenience of the
+        #   interactive user.
+        elif query:
             try:
                 self.info = sesame.search(os.path.basename(ID),fix=True)
             except KeyError:
@@ -496,20 +507,18 @@ class SED(object):
                     logger.info('Resolved position via CoRoT EXO catalog')
                 except:
                     logger.warning("Star %s not recognised by CoRoT"%(os.path.basename(ID)))
-
+            # -- Some weird, undocumented parallax trick.
             if plx is not None:
                 if not 'plx' in self.info:
                     self.info['plx'] = {}
                 self.info['plx']['v'] = plx[0]
                 self.info['plx']['e'] = plx[1]
+        # -- The object name was not queried. Inform the user.
         else:
-            self.load_photometry()
-            logger.info('Photometry loaded from file')
-            # -- if no ID was given, set the official name as the ID.
-            if self.ID is None:
-                self.ID = os.path.splitext(os.path.basename(self.photfile))[0]#self.info['oname']
-                logger.info('Name from file used to set ID of object')
-        # --load information from the FITS file if it exists
+            logger.info('Star %s not queried during init'
+                %(os.path.basename(ID)))
+
+        # -- Load information from the FITS and HDF5 files.
         self.results = {}
         self.constraints = {}
         if load_fits:
